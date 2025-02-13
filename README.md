@@ -22,7 +22,7 @@ follow the below instructions:
 1. Click **Create repository**
 1. Clone your new repository
 
-> [!CAUTION]
+> [!IMPORTANT]
 >
 > Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
 > details on how to use this file, see
@@ -101,7 +101,7 @@ There are a few things to keep in mind when writing your action code:
   ```
 
   For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
+  [documentation](https://github.com/actions/toolkit/blob/main/README.md).
 
 So, what are you waiting for? Go ahead and start customizing your action!
 
@@ -119,14 +119,40 @@ So, what are you waiting for? Go ahead and start customizing your action!
    npm run all
    ```
 
-   > [!WARNING]
-   >
    > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
    > to build the final JavaScript action code with all dependencies included.
    > If you do not run this step, your action will not work correctly when it is
    > used in a workflow. This step also includes the `--license` option for
    > `ncc`, which will create a license file for all of the production node
    > modules used in your project.
+
+1. (Optional) Test your action locally
+
+   The [`@github/local-action`](https://github.com/github/local-action) utility
+   can be used to test your action locally. It is a simple command-line tool
+   that "stubs" (or simulates) the GitHub Actions Toolkit. This way, you can run
+   your JavaScript action locally without having to commit and push your changes
+   to a repository.
+
+   The `local-action` utility can be run in the following ways:
+
+   - Visual Studio Code Debugger
+
+     Make sure to review and, if needed, update
+     [`.vscode/launch.json`](./.vscode/launch.json)
+
+   - Terminal/Command Prompt
+
+     ```bash
+     # npx local action <action-yaml-path> <entrypoint> <dotenv-file>
+     npx local-action . src/main.js .env
+     ```
+
+   You can provide a `.env` file to the `local-action` CLI to set environment
+   variables used by the GitHub Actions Toolkit. For example, setting inputs and
+   event payload data used by your action. For more information, see the example
+   file, [`.env.example`](./.env.example), and the
+   [GitHub Actions Documentation](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
 
 1. Commit your changes
 
@@ -147,7 +173,7 @@ So, what are you waiting for? Go ahead and start customizing your action!
 Your action is now published! :rocket:
 
 For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+[Versioning](https://github.com/actions/toolkit/blob/main/docs/action-versioning.md)
 in the GitHub Actions toolkit.
 
 ## Validate the Action
@@ -180,7 +206,7 @@ For example workflow runs, check out the
 
 After testing, you can create version tag(s) that developers can use to
 reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+[Versioning](https://github.com/actions/toolkit/blob/main/docs/action-versioning.md)
 in the GitHub Actions toolkit.
 
 To include the action in a workflow in another repository, you can use the
@@ -202,4 +228,49 @@ steps:
   - name: Print Output
     id: output
     run: echo "${{ steps.run-action.outputs.time }}"
+```
+
+## Dependency License Management
+
+This template includes a GitHub Actions workflow,
+[`licensed.yml`](./.github/workflows/licensed.yml), that uses
+[Licensed](https://github.com/licensee/licensed) to check for dependencies with
+missing or non-compliant licenses. This workflow is initially disabled. To
+enable the workflow, follow the below steps.
+
+1. Open [`licensed.yml`](./.github/workflows/licensed.yml)
+1. Uncomment the following lines:
+
+   ```yaml
+   # pull_request:
+   #   branches:
+   #     - main
+   # push:
+   #   branches:
+   #     - main
+   ```
+
+1. Save and commit the changes
+
+Once complete, this workflow will run any time a pull request is created or
+changes pushed directly to `main`. If the workflow detects any dependencies with
+missing or non-compliant licenses, it will fail the workflow and provide details
+on the issue(s) found.
+
+### Updating Licenses
+
+Whenever you install or update dependencies, you can use the Licensed CLI to
+update the licenses database. To install Licensed, see the project's
+[Readme](https://github.com/licensee/licensed?tab=readme-ov-file#installation).
+
+To update the cached licenses, run the following command:
+
+```bash
+licensed cache
+```
+
+To check the status of cached licenses, run the following command:
+
+```bash
+licensed status
 ```

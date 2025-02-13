@@ -1,4 +1,7 @@
-# Repository CODEOWNERS
+############################################################################
+#                           Repository CODEOWNERS                          #
+# Order is important! The last matching pattern takes the most precedence. #
+############################################################################
 
-* @actions/actions-runtime
-* @ncalteen
+# Default owners, unless a later match takes precedence.
+* @actions/actions-oss-maintainers
